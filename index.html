@@ -4,14 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Resume — Akkaraphon Worakleeb</title>
-  <meta name="description" content="Resume PDF viewer Resume — Akkaraphon Worakleeb  —  • Fit Width / Fit Page ">
+  <meta name="description" content="Resume PDF viewer — เปิดปุ๊บเห็นเลย • ซูมลื่นและคม • Fit Width / Fit Page">
   <meta name="color-scheme" content="light">
   <link rel="icon" href="data:," />
 
-  <!-- Tailwind CSS (CDN) — ใช้คลาสได้ทันที ไม่ต้อง build -->
+  <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- PDF.js — ไลบรารีอ่าน PDF ฝั่ง client -->
+  <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
     // บอก PDF.js ให้ใช้ worker จาก CDN (จำเป็นบน GitHub Pages)
@@ -20,74 +20,53 @@
   </script>
 
   <style>
-    /* เงาหน้ากระดาษนุ่ม ๆ */
     .page-shadow { box-shadow: 0 10px 22px rgba(2, 6, 23, .12); border-radius: .6rem; }
-    /* แถบเลื่อนสวยขึ้น (WebKit) */
     #viewer::-webkit-scrollbar{height:12px;width:12px}
     #viewer::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
     #viewer::-webkit-scrollbar-track{background:#e2e8f0}
-
-    /* ทำให้เลื่อนแล้ว "สแน็ป" ทีละหน้า → อ่านสบายตา */
-    #viewer{ scroll-snap-type: y proximity; }
-    .page-holder{ scroll-snap-align: start; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-rose-100">
 
-  <!-- ===== TOOLBAR: แถบเครื่องมือด้านบน (Grid + Flex) ===== -->
+  <!-- ===== Toolbar ===== -->
   <header class="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
-    <div class="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 grid grid-cols-12 items-center gap-2">
-      <!-- แบรนด์/หัวเรื่อง -->
-      <div class="col-span-12 sm:col-span-3 flex items-center gap-2">
+    <div class="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex flex-wrap items-center gap-2">
+      <div class="flex items-center gap-2 mr-auto">
         <div class="h-6 w-1.5 bg-rose-900 rounded"></div>
-        <div class="font-bold tracking-wide text-rose-900">Resume PDF Viewer</div>
+        <div class="font-bold tracking-wide text-rose-900">Resume อัครพนธ์</div>
       </div>
 
-      <!-- ปุ่มควบคุม (กลาง) -->
-      <div class="col-span-12 sm:col-span-6 order-3 sm:order-2 flex flex-wrap items-center justify-center gap-1.5">
-        <button id="fitWidthBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Fit Width</button>
-        <button id="fitPageBtn"  class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Fit Page</button>
+      <button id="fitWidthBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Fit Width</button>
+      <button id="fitPageBtn"  class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Fit Page</button>
 
-        <span class="mx-1 w-px h-6 bg-slate-200"></span>
+      <span class="mx-1 w-px h-6 bg-slate-200"></span>
 
-        <button id="zoomOutBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">−</button>
-        <span id="zoomLabel" class="w-16 text-center font-semibold tabular-nums">100%</span>
-        <button id="zoomInBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">+</button>
+      <button id="zoomOutBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">−</button>
+      <span id="zoomLabel" class="w-16 text-center font-semibold tabular-nums">100%</span>
+      <button id="zoomInBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">+</button>
 
-        <span class="mx-1 w-px h-6 bg-slate-200"></span>
+      <span class="mx-1 w-px h-6 bg-slate-200"></span>
 
-        <!-- นำทางหน้า -->
-        <button id="prevBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">‹</button>
-        <input id="pageInput" type="number" min="1" value="1" aria-label="ไปหน้าที่"
-               class="w-16 px-2 py-1.5 border border-slate-300 rounded-lg text-center" />
-        <span id="pageTotal" class="px-1 text-slate-500">/ 1</span>
-        <button id="nextBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">›</button>
-      </div>
-
-      <!-- ปุ่มขวา: เปิด/ดาวน์โหลด/พิมพ์ -->
-      <div class="col-span-12 sm:col-span-3 order-2 sm:order-3 flex items-center justify-end gap-1.5">
-        <a id="openBtn"     href="#" target="_blank" rel="noopener"
-           class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Open</a>
-        <a id="downloadBtn" href="#" download
-           class="px-3 py-1.5 rounded-lg bg-rose-900 text-white border border-rose-900 hover:bg-rose-800">Download</a>
-        <a id="printBtn"    href="#" target="_blank" rel="noopener"
-           class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Print</a>
-      </div>
+      <a id="openBtn"     href="#" target="_blank" rel="noopener"
+         class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Open</a>
+      <a id="downloadBtn" href="#" download
+         class="px-3 py-1.5 rounded-lg bg-rose-900 text-white border border-rose-900 hover:bg-rose-800">Download</a>
+      <a id="printBtn"    href="#" target="_blank" rel="noopener"
+         class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Print</a>
     </div>
 
-    <!-- แถบสถานะโหลด — จะค่อย ๆ วิ่งตอนโหลด PDF -->
+    <!-- Progress bar ตอนโหลดไฟล์ -->
     <div id="progressWrap" class="w-full h-1 bg-slate-200">
       <div id="progressBar" class="h-full w-0 bg-rose-900 transition-all duration-300"></div>
     </div>
   </header>
 
-  <!-- ===== VIEWER: พื้นที่แสดงเอกสาร ===== -->
+  <!-- ===== Viewer ===== -->
   <main class="max-w-6xl mx-auto px-3 sm:px-4">
     <section class="mt-4 bg-white border border-slate-200 rounded-xl overflow-hidden">
-      <!-- สูง “พอดีตา”: หักพื้นที่ toolbar ข้างบน -->
+      <!-- สูงพอดีตา: หัก toolbar -->
       <div id="viewer" class="overflow-auto bg-slate-100 flex justify-center"
            style="height: calc(100vh - 128px); touch-action: pan-y;">
-        <!-- touch-action: pan-y = ให้เลื่อนแนวตั้งได้ แต่ยังจับ pinch-zoom เองได้ -->
         <div id="loadingMsg" class="p-6 text-slate-500">กำลังโหลดไฟล์…</div>
       </div>
     </section>
@@ -100,30 +79,24 @@
 
   <script>
     /********************************************************************
-     * อธิบายแบบบ้าน ๆ:
-     * - ใช้ PDF.js แปลงแต่ละหน้าไปวาดบน <canvas> (จะได้คมมาก)
-     * - ตัวแปร scale = ระดับซูม (1=100%, 1.2=120% ฯลฯ)
-     * - Fit Width / Fit Page = คำนวณ scale ให้พอดีกว้าง/พอดีทั้งหน้า
-     * - คูณ devicePixelRatio เพื่อให้คมบนจอ Retina
-     * - ใช้ IntersectionObserver: วาดเฉพาะ “หน้าที่กำลังเห็น” → ลื่น
-     * - รองรับ wheel+Ctrl (เดสก์ท็อป) และ pinch-to-zoom (มือถือ) แบบลื่น
-     * - มี fallback: ถ้า .pdf ไม่เจอ ลอง .PDF ให้อัตโนมัติ
+     * แก้ “รูปกลับหัว”: บังคับหมุนเป็น 0° ตอนเรนเดอร์ (rotation: 0)
+     * เพราะไฟล์ PDF บางไฟล์ฝังค่าหมุนไว้ (เช่น 180°) PDF.js จะเชื่อค่านั้น
+     * เราเลย override ให้หมุน 0° เสมอครับ
      ********************************************************************/
 
-    // (1) ตั้งชื่อไฟล์ — ต้องวางไฟล์ไว้ที่โฟลเดอร์เดียวกับ index.html
+    // 1) ชื่อไฟล์ PDF (โฟลเดอร์เดียวกับ index.html)
     const PDF_FILE_LOWER = "resumeAkkaphonWorakleeb30551.pdf";
     const PDF_FILE_UPPER = "resumeAkkaphonWorakleeb30551.PDF";
     let PDF_FILE = PDF_FILE_LOWER;
 
-    // (2) ตัวแปรสถานะหลัก
-    let pdfDoc = null;          // เอกสาร PDF ทั้งเล่ม
-    let scale = 1;              // ระดับซูมตอนนี้
-    let baseViewport = null;    // ขนาดหน้าแรกตอน scale=1 (ไว้คำนวณ fit)
-    let fitMode = "width";      // "width" | "page" | "free"
-    let currentPage = 1;        // หน้าที่กำลังโฟกัส
-    const renderedAtScale = new Map(); // จำว่าเคยวาดหน้าที่ scale เท่าไรแล้ว
+    // 2) สถานะ viewer
+    let pdfDoc = null;
+    let scale = 1;
+    let baseViewport = null;
+    let fitMode = "width"; // "width" | "page" | "free"
+    const renderedAtScale = new Map();
 
-    // (3) element ต่าง ๆ
+    // 3) element อ้างอิง
     const viewer       = document.getElementById("viewer");
     const loadingMsg   = document.getElementById("loadingMsg");
     const progressWrap = document.getElementById("progressWrap");
@@ -134,28 +107,21 @@
     const zoomInBtn    = document.getElementById("zoomInBtn");
     const zoomOutBtn   = document.getElementById("zoomOutBtn");
     const zoomLabel    = document.getElementById("zoomLabel");
-    const prevBtn      = document.getElementById("prevBtn");
-    const nextBtn      = document.getElementById("nextBtn");
-    const pageInput    = document.getElementById("pageInput");
-    const pageTotal    = document.getElementById("pageTotal");
 
     const openBtn      = document.getElementById("openBtn");
     const downloadBtn  = document.getElementById("downloadBtn");
     const printBtn     = document.getElementById("printBtn");
 
-    // โยงลิงก์ให้ปุ่ม Open/Download/Print ใช้ไฟล์ PDF
     function wireFileButtons() {
       openBtn.href     = PDF_FILE;
       downloadBtn.href = PDF_FILE;
       printBtn.href    = PDF_FILE + "#print";
     }
 
-    // แสดง % ซูมบน toolbar
     const updateZoomLabel = () => zoomLabel.textContent = Math.round(scale * 100) + "%";
 
-    // คำนวณซูมให้พอดีกว้าง/พอดีทั้งหน้า
     function fitWidth() {
-      const padding = 40; // เผื่อไม่ให้ชิดขอบ
+      const padding = 40;
       const availableW = viewer.clientWidth - padding;
       scale = availableW / baseViewport.width;
       fitMode = "width"; updateZoomLabel();
@@ -170,45 +136,38 @@
       fitMode = "page"; updateZoomLabel();
     }
 
-    // ซูมแบบลื่น (จำกัดช่วง 40%–400%)
     function zoomBy(factor) {
       fitMode = "free";
       const newScale = Math.min(4, Math.max(0.4, scale * factor));
-      if (Math.abs(newScale - scale) < 0.02) return; // ต่างนิดเดียวไม่ต้อง redraw
+      if (Math.abs(newScale - scale) < 0.02) return;
       scale = newScale; updateZoomLabel();
-      invalidateAllPages(); renderVisiblePages();
+      renderedAtScale.clear(); renderVisiblePages();
       viewer.scrollTo({ top: 0, behavior: "instant" });
     }
 
-    // วาง "placeholder" ครบทุกหน้า แล้วค่อยวาดเฉพาะที่เห็น
     function buildPlaceholders() {
       viewer.innerHTML = "";
       const total = pdfDoc.numPages;
       for (let n = 1; n <= total; n++) {
         const wrap = document.createElement("div");
-        wrap.className = "page-holder my-5"; // ใช้ scroll-snap-align ด้วย
+        wrap.className = "my-5";
         wrap.dataset.page = n;
 
         const canvas = document.createElement("canvas");
         canvas.className = "page-shadow bg-white mx-auto block";
         wrap.appendChild(canvas);
 
-        const label = document.createElement("div");
-        label.className = "text-center text-slate-500 text-xs mt-1";
-        label.textContent = `หน้า ${n}/${total}`;
-        wrap.appendChild(label);
-
         viewer.appendChild(wrap);
       }
     }
 
-    // วาด 1 หน้าให้คม (รองรับจอ Retina) — จำกัด dpr สูงสุด 2 เพื่อไม่กิน RAM/CPU
+    // วาด 1 หน้าให้คม + “หมุนเป็น 0° เสมอ” ด้วย rotation: 0
     async function renderOnePage(pageNum) {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      if (renderedAtScale.get(pageNum) === scale) return; // เคยวาด scale เดิมแล้ว → ข้าม
+      if (renderedAtScale.get(pageNum) === scale) return;
 
       const page = await pdfDoc.getPage(pageNum);
-      const viewport = page.getViewport({ scale });
+      const viewport = page.getViewport({ scale, rotation: 0 }); // <-- จุดแก้กลับหัว
 
       const holder = viewer.querySelector(`[data-page="${pageNum}"]`);
       const canvas = holder.querySelector("canvas");
@@ -228,21 +187,7 @@
       renderedAtScale.set(pageNum, scale);
     }
 
-    // ใช้ IntersectionObserver: เห็นหน้าไหนค่อยวาดหน้านั้น → ลื่นมาก
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (e.isIntersecting) {
-          const n = Number(e.target.dataset.page);
-          currentPage = n; pageInput.value = n;
-          renderOnePage(n);
-        }
-      }
-    }, { root: viewer, threshold: 0.1, rootMargin: "200px 0px" }); // rootMargin = วาดล่วงหน้าใกล้ ๆ
-
-    function observeAll() {
-      document.querySelectorAll('#viewer [data-page]').forEach(el => io.observe(el));
-    }
-    function invalidateAllPages() { renderedAtScale.clear(); }
+    // วาดเฉพาะหน้าที่มองเห็น (ง่าย ๆ เพราะเอกสารคุณ 1 หน้าอยู่แล้ว)
     function renderVisiblePages() {
       document.querySelectorAll('#viewer [data-page]').forEach(el => {
         const r = el.getBoundingClientRect(), root = viewer.getBoundingClientRect();
@@ -251,17 +196,14 @@
       });
     }
 
-    // โหลด PDF (พร้อม fallback ชื่อไฟล์) → แสดงทันที (เริ่มด้วย Fit Width)
     async function loadPdfWithFallback() {
-      wireFileButtons(); // ให้ปุ่มลิงก์ถูกไฟล์ก่อน
+      wireFileButtons();
 
       const loadingTask = pdfjsLib.getDocument({
         url: PDF_FILE,
         disableAutoFetch: false,
-        rangeChunkSize: 65536 // โหลดเป็นก้อน ๆ เพื่อให้ progress วิ่งลื่น ๆ
+        rangeChunkSize: 65536
       });
-
-      // อัปเดตแถบโหลด
       loadingTask.onProgress = ({ loaded, total }) => {
         if (total) progressBar.style.width = Math.min(100, Math.round(loaded / total * 100)) + "%";
       };
@@ -269,35 +211,25 @@
       try {
         pdfDoc = await loadingTask.promise;
       } catch (err) {
-        // ถ้า .pdf ไม่เจอ ลอง .PDF อัตโนมัติ
         if (PDF_FILE === PDF_FILE_LOWER) {
-          PDF_FILE = PDF_FILE_UPPER;
-          wireFileButtons();
-          return loadPdfWithFallback();
+          PDF_FILE = PDF_FILE_UPPER; wireFileButtons(); return loadPdfWithFallback();
         }
         throw err;
       }
 
-      // ตั้งค่าจำนวนหน้าใน UI
-      pageTotal.textContent = `/ ${pdfDoc.numPages}`;
-      pageInput.max = pdfDoc.numPages;
-
-      // อ่านหน้าแรกเพื่อเอาขนาดฐาน (scale=1)
+      // เตรียม viewport ฐานจากหน้าแรก แต่บังคับ rotation: 0 เช่นกัน
       const first = await pdfDoc.getPage(1);
-      baseViewport = first.getViewport({ scale: 1 });
+      baseViewport = first.getViewport({ scale: 1, rotation: 0 });
 
-      // ปู placeholder ทุกหน้า + ให้ observer เฝ้า
-      buildPlaceholders(); observeAll();
+      buildPlaceholders();
+      fitWidth();           // เปิดมาพอดีกว้าง
+      renderVisiblePages(); // แล้ววาด
 
-      // เริ่มด้วย Fit Width → เปิดมาปุ๊บเห็นเต็มความกว้าง
-      fitWidth(); renderVisiblePages();
-
-      // เก็บ UI โหลด
       loadingMsg?.remove();
       setTimeout(() => progressWrap.classList.add("hidden"), 400);
     }
 
-    // เปิดเว็บ → โหลดเลย!
+    // โหลดเลย (เปิดเว็บปุ๊บเห็นทันที)
     loadPdfWithFallback().catch(err => {
       progressWrap.classList.add("hidden");
       viewer.innerHTML = `<div class="p-6 text-red-700">
@@ -305,84 +237,18 @@
         ตรวจชื่อไฟล์ <code>${PDF_FILE}</code> ให้ตรงกับใน repo (ตัวพิมพ์เล็ก/ใหญ่ต้องตรง)</div>`;
     });
 
-    // ===== ปุ่ม / คีย์ลัด =====
-    fitWidthBtn.addEventListener("click", () => { fitWidth(); invalidateAllPages(); renderVisiblePages(); });
-    fitPageBtn .addEventListener("click", () => { fitPage();  invalidateAllPages(); renderVisiblePages(); });
+    // ปุ่ม/คีย์ลัด
+    fitWidthBtn.addEventListener("click", () => { fitWidth(); renderedAtScale.clear(); renderVisiblePages(); });
+    fitPageBtn .addEventListener("click", () => { fitPage();  renderedAtScale.clear(); renderVisiblePages(); });
     zoomInBtn  .addEventListener("click", () => zoomBy(1.1));
     zoomOutBtn .addEventListener("click", () => zoomBy(1/1.1));
 
-    // คีย์ลัด: Ctrl/⌘ +/−/0, W=FitWidth, P=FitPage, Home/End ไปหน้าแรก/สุดท้าย
-    window.addEventListener("keydown", (e) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === "+" || e.key === "=")) { e.preventDefault(); zoomBy(1.1); }
-      if ((e.ctrlKey || e.metaKey) &&  e.key === "-")                   { e.preventDefault(); zoomBy(1/1.1); }
-      if ((e.ctrlKey || e.metaKey) &&  e.key === "0")                   { e.preventDefault(); fitWidth(); invalidateAllPages(); renderVisiblePages(); }
-      if (e.key.toLowerCase() === "w") { fitWidth(); invalidateAllPages(); renderVisiblePages(); }
-      if (e.key.toLowerCase() === "p") { fitPage();  invalidateAllPages(); renderVisiblePages(); }
-      if (e.key === "Home") { goPage(1); }
-      if (e.key === "End")  { goPage(pdfDoc?.numPages || 1); }
-    });
-
-    // ซูมแบบ “มืออาชีพ”: Ctrl + ล้อเมาส์ (เดสก์ท็อป)
+    // ซูมด้วย Ctrl + ล้อเมาส์
     viewer.addEventListener("wheel", (e) => {
-      if (e.ctrlKey) { e.preventDefault(); const factor = e.deltaY < 0 ? 1.08 : 1/1.08; zoomBy(factor); }
+      if (e.ctrlKey) { e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.08 : 1/1.08); }
     }, { passive: false });
 
-    // ===== Pinch-to-Zoom (มือถือ/ทัช) — จับสองนิ้วแล้วแหวก/บีบ =====
-    const touches = new Map(); // เก็บตำแหน่ง pointer สองนิ้ว
-    let pinchBaseDist = null, pinchStartScale = null;
-
-    function dist(a, b){ return Math.hypot(a.x - b.x, a.y - b.y); }
-
-    viewer.addEventListener("pointerdown", (e) => {
-      // จับ pointer ทุกนิ้ว เอาไว้คุม pinch เอง
-      viewer.setPointerCapture(e.pointerId);
-      touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
-    }, { passive: true });
-
-    viewer.addEventListener("pointermove", (e) => {
-      if (!touches.has(e.pointerId)) return;
-      touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
-
-      if (touches.size === 2) {
-        const [a, b] = [...touches.values()];
-        const d = dist(a, b);
-        if (!pinchBaseDist) { // เริ่ม pinch: จำระยะเริ่มต้น + scale เริ่มต้น
-          pinchBaseDist = d; pinchStartScale = scale;
-        } else {
-          const factor = d / pinchBaseDist;
-          const newScale = Math.min(4, Math.max(0.4, pinchStartScale * factor));
-          if (Math.abs(newScale - scale) > 0.02) {
-            scale = newScale; fitMode = "free"; updateZoomLabel();
-            invalidateAllPages(); renderVisiblePages();
-          }
-        }
-        e.preventDefault(); // กัน browser ซูมเอง
-      }
-    }, { passive: false });
-
-    function endPointer(e){
-      touches.delete(e.pointerId);
-      if (touches.size < 2) { pinchBaseDist = null; pinchStartScale = null; }
-    }
-    viewer.addEventListener("pointerup", endPointer, { passive: true });
-    viewer.addEventListener("pointercancel", endPointer, { passive: true });
-    viewer.addEventListener("pointerleave", endPointer, { passive: true });
-
-    // ===== นำทางหน้า =====
-    function goPage(n) {
-      if (!pdfDoc) return;
-      n = Math.max(1, Math.min(pdfDoc.numPages, n));
-      const target = viewer.querySelector(`[data-page="${n}"]`);
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth", block: "start" });
-        currentPage = n; pageInput.value = n;
-      }
-    }
-    prevBtn.addEventListener("click", () => goPage(currentPage - 1));
-    nextBtn.addEventListener("click", () => goPage(currentPage + 1));
-    pageInput.addEventListener("change", () => goPage(Number(pageInput.value || 1)));
-
-    // รีไซส์หน้าต่าง: ถ้าอยู่โหมด fit ให้คงความพอดี แล้ววาดเฉพาะที่เห็น
+    // รีไซส์: ถ้าอยู่โหมด fit ให้คงความพอดี
     let resizeTimer;
     window.addEventListener("resize", () => {
       if (!baseViewport) return;
@@ -390,7 +256,7 @@
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(() => {
           (fitMode === "width" ? fitWidth : fitPage)();
-          invalidateAllPages(); renderVisiblePages();
+          renderedAtScale.clear(); renderVisiblePages();
         }, 120);
       }
     });
