@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Resume — Akkaraphon Worakleeb</title>
+  <meta name="description" content="Resume PDF viewer — Akkaraphon Worakleeb, Mathematics & Computer Science (Year 3)" />
+  <style>
+    :root{
+      --primary:#6b0f0f; /* โทนเข้มดูทางการ */
+      --ink:#222; --muted:#666; --bg:#f6f7fb; --card:#ffffff;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;}
+    body{
+      margin:0; background:var(--bg); color:var(--ink);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Thai", "Helvetica Neue", Arial, sans-serif;
+    }
+    header{
+      position:sticky; top:0; z-index:5;
+      background:var(--card); border-bottom:1px solid #e8e8ef;
+    }
+    .bar{
+      margin:0 auto; max-width:1100px; padding:10px 14px;
+      display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    }
+    .brand{font-weight:700; letter-spacing:.3px; color:var(--primary);}
+    .spacer{flex:1}
+    button, .btn{
+      appearance:none; border:1px solid #d2d6e0; background:#fff; color:#222;
+      padding:8px 10px; border-radius:8px; cursor:pointer; font-weight:600;
+    }
+    button:hover, .btn:hover{border-color:#b9c0cf}
+    .btn-primary{background:var(--primary); color:#fff; border-color:var(--primary)}
+    .zoom{min-width:70px; text-align:center; font-variant-numeric:tabular-nums}
+    .viewer-wrap{
+      margin:16px auto; max-width:1100px;
+      background:var(--card); border:1px solid #e8e8ef; border-radius:12px;
+      box-shadow:0 6px 16px rgba(23,23,31,.04);
+      overflow:hidden;
+    }
+    #viewer{
+      height: calc(100vh - 120px); /* พอดีตา: เหลือที่ให้แถบเครื่องมือ */
+      overflow: auto; background:#f0f1f6; display:flex; justify-content:center;
+      scroll-behavior: smooth;
+    }
+    .page{
+      margin:20px; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.08);
+      border-radius:6px; overflow:hidden;
+    }
+    .empty{padding:24px; color:var(--muted);}
+    .footer{
+      text-align:center; color:var(--muted); font-size:.9rem; padding:10px 0 24px;
+    }
+    /* ปรับสำหรับมือถือ */
+    @media (max-width: 720px){
+      #viewer{height: calc(100vh - 160px);}
+    }
+  </style>
+
+  <!-- PDF.js (CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js" defer></script>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <div class="brand">Resume PDF Viewer</div>
+      <div class="spacer"></div>
+
+      <button id="fitWidthBtn" title="พอดีกว้าง (W)">Fit Width</button>
+      <button id="fitPageBtn" title="พอดีหน้า (P)">Fit Page</button>
+
+      <button id="zoomOutBtn" title="ซูมออก (Ctrl/⌘ -)">−</button>
+      <div id="zoomLabel" class="zoom">100%</div>
+      <button id="zoomInBtn" title="ซูมเข้า (Ctrl/⌘ +)">+</button>
+
+      <a class="btn" id="openBtn" href="resumeAkkaphonWorakleeb30551.PDF" target="_blank" rel="noopener">Open</a>
+      <a class="btn btn-primary" id="downloadBtn" href="resumeAkkaphonWorakleeb30551.PDF" download>Download</a>
+    </div>
+  </header>
+
+  <div class="viewer-wrap">
+    <div id="viewer"><div class="empty">กำลังโหลดไฟล์…</div></div>
+  </div>
+
+  <div class="footer">
+    <a href="https://akkaraphon88.github.io/30551DatacommuWebHosting" target="_blank" rel="noopener">
+      https://akkaraphon88.github.io/30551DatacommuWebHosting
+    </a>
+  </div>
+
+  <script>
+    // ====== ตั้งค่าไฟล์ PDF ======
+    const PDF_URL = "./resumeAkkaphonWorakleeb30551.PDF"; // ต้องอยู่โฟลเดอร์เดียวกับ index.html (ตัวพิมพ์ใหญ่/เล็กต้องตรง)
+
+    // ====== สถานะ viewer ======
+    let pdfDoc = null;
+    let scale = 1;                   // อัตราขยายปัจจุบัน
+    let baseViewport = null;         // viewport ของหน้า 1 ที่ scale = 1 (ใช้คำนวณ fit)
+    let fitMode = "width";           // "width" | "page" | "free"
+
+    // ====== อ้างถึง element ======
+    const viewer = document.getElementById("viewer");
+    const zoomLabel = document.getElementById("zoomLabel");
+    const fitWidthBtn = document.getElementById("fitWidthBtn");
+    const fitPageBtn = document.getElementById("fitPageBtn");
+    const zoomInBtn = document.getElementById("zoomInBtn");
+    const zoomOutBtn = document.getElementById("zoomOutBtn");
+
+    // ====== ใช้ PDF.js ======
+    document.addEventListener("DOMContentLoaded", async () => {
+      // ชี้ worker (สำคัญมากเวลา host บน GitHub Pages)
+      if (window.pdfjsLib) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+          "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      }
+
+      try {
+        const loadingTask = pdfjsLib.getDocument(PDF_URL);
+        pdfDoc = await loadingTask.promise;
+
+        // เตรียม viewport จากหน้าแรก
+        const firstPage = await pdfDoc.getPage(1);
+        baseViewport = firstPage.getViewport({ scale: 1 });
+
+        // เริ่มด้วย "พอดีกว้าง"
+        fitWidth();
+        await renderAllPages();
+
+        // ปุ่มควบคุม
+        fitWidthBtn.addEventListener("click", () => { fitWidth(); renderAllPages(); });
+        fitPageBtn.addEventListener("click", () => { fitPage(); renderAllPages(); });
+        zoomInBtn.addEventListener("click", () => { zoomBy(1.1); });
+        zoomOutBtn.addEventListener("click", () => { zoomBy(1/1.1); });
+
+        // ซูมด้วยคีย์ลัด
+        window.addEventListener("keydown", (e) => {
+          if ((e.ctrlKey || e.metaKey) && (e.key === "+" || e.key === "=")) { e.preventDefault(); zoomBy(1.1); }
+          if ((e.ctrlKey || e.metaKey) && (e.key === "-")) { e.preventDefault(); zoomBy(1/1.1); }
+          if ((e.ctrlKey || e.metaKey) && (e.key === "0")) { e.preventDefault(); fitWidth(); renderAllPages(); }
+          if (e.key.toLowerCase() === "w") { fitWidth(); renderAllPages(); }
+          if (e.key.toLowerCase() === "p") { fitPage(); renderAllPages(); }
+        });
+
+        // ปรับตามขนาดหน้าจอ
+        let resizeTimer;
+        window.addEventListener("resize", () => {
+          if (fitMode !== "free") {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => { fitMode === "width" ? fitWidth() : fitPage(); renderAllPages(); }, 120);
+          }
+        });
+      } catch (err) {
+        viewer.innerHTML = `<div class="empty">ไม่สามารถเปิดไฟล์ได้: ${err.message}</div>`;
+      }
+    });
+
+    function fitWidth() {
+      const padding = 40; // เผื่อ margin ซ้าย/ขวา
+      const available = viewer.clientWidth - padding;
+      scale = available / baseViewport.width;
+      fitMode = "width";
+      updateZoomLabel();
+    }
+    function fitPage() {
+      const padding = 40;
+      const availableW = viewer.clientWidth - padding;
+      const availableH = viewer.clientHeight - padding;
+      const s1 = availableW / baseViewport.width;
+      const s2 = availableH / baseViewport.height;
+      scale = Math.min(s1, s2);
+      fitMode = "page";
+      updateZoomLabel();
+    }
+    function zoomBy(factor) {
+      fitMode = "free";
+      const newScale = Math.min(3.5, Math.max(0.5, scale * factor)); // จำกัดช่วงซูม
+      if (Math.abs(newScale - scale) < 0.02) return;
+      scale = newScale;
+      updateZoomLabel();
+      renderAllPages();
+    }
+    function updateZoomLabel() {
+      zoomLabel.textContent = Math.round(scale * 100) + "%";
+    }
+
+    async function renderAllPages() {
+      // ล้างก่อน
+      viewer.innerHTML = "";
+
+      const total = pdfDoc.numPages;
+      for (let pageNum = 1; pageNum <= total; pageNum++) {
+        const page = await pdfDoc.getPage(pageNum);
+        const viewport = page.getViewport({ scale });
+
+        // สร้าง canvas ต่อหน้า
+        const canvas = document.createElement("canvas");
+        canvas.className = "page";
+        const context = canvas.getContext("2d");
+
+        // คมชัดบนจอ Retina
+        const outputScale = window.devicePixelRatio || 1;
+        canvas.width = Math.floor(viewport.width * outputScale);
+        canvas.height = Math.floor(viewport.height * outputScale);
+        canvas.style.width = Math.floor(viewport.width) + "px";
+        canvas.style.height = Math.floor(viewport.height) + "px";
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+          transform: outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null
+        };
+
+        viewer.appendChild(canvas);
+        await page.render(renderContext).promise;
+      }
+      // เลื่อนกลับบนสุดทุกครั้งที่ปรับซูม
+      viewer.scrollTo({ top: 0, behavior: "instant" });
+    }
+  </script>
+
+  <noscript>
+    <div style="max-width:1100px;margin:20px auto;padding:14px;">
+      ต้องเปิดใช้งาน JavaScript เพื่อดูตัวอ่าน PDF แบบโต้ตอบ
+      (สำรอง) <a href="resumeAkkaphonWorakleeb30551.PDF" target="_blank" rel="noopener">เปิดไฟล์ในแท็บใหม่</a>
+    </div>
+  </noscript>
+</body>
+</html>
