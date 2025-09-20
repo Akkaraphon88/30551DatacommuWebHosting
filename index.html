@@ -1,33 +1,53 @@
 <!doctype html> <!-- บอกเบราว์เซอร์ว่าเป็น HTML5 -->
 <html lang="th"> <!-- ภาษาหลักเป็นไทย -->
 <head>
-  <meta charset="utf-8" /> <!-- เข้ารหัส UTF-8 -->
-  <meta name="viewport" content="width=device-width,initial-scale=1" /> <!-- ให้หน้าตาเหมาะกับมือถือ -->
-  <title>Resume — Akkaraphon Worakleeb</title> <!-- ชื่อแท็บ -->
-  <meta name="description" content="Resume PDF viewer — เปิดปุ๊บเห็นเลย • ซูมลื่นและคม • Fit Width / Fit Page"> <!-- คำอธิบายสำหรับค้นหา -->
-  <meta name="color-scheme" content="light"> <!-- บอกโทนสีหลัก -->
-  <meta name="theme-color" content="#6b0f0f"> <!-- สี address bar บนมือถือ (ทางการหน่อย) -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Resume — Akkaraphon Worakleeb</title>
 
-  <!-- favicon: เอารูปไอคอนเว็บมาโชว์ในแท็บ -->
-  <link rel="icon" type="image/png" href="favicon.png" /> <!-- ใส่ไฟล์ favicon.png ที่ root -->
-  <!-- ถ้ามีไฟล์ .ico ก็ใส่เพิ่มได้: <link rel="icon" type="image/x-icon" href="favicon.ico"> -->
-  <link rel="apple-touch-icon" href="favicon.png" /> <!-- ไอคอนเวลา Add to Home บน iOS -->
+  <!-- คำอธิบายหลักของหน้า (จะใช้เป็นพรีวิวกรณีไม่มี OG) -->
+  <meta name="description" content="เรซูเม่ Akkaraphon Worakleeb — ปี 3 Mathematics & Computer Science (KMUTNB) ">
 
-  <!-- Tailwind CSS (CDN) ใช้คลาสได้ทันที -->
+  <!-- Canonical URL ของหน้า -->
+  <link rel="canonical" href="https://akkaraphon88.github.io/30551DatacommuWebHosting/">
+
+  <!-- Open Graph (ใช้กับ LINE/FB/Discord ฯลฯ) -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Resume — Akkaraphon Worakleeb">
+  <meta property="og:url" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/">
+  <meta property="og:title" content="Resume — Akkaraphon Worakleeb (KMUTNB)">
+  <meta property="og:description" content="เรซูเม่ Akkaraphon Worakleeb คณิตศาสตร์เชิงวิทยาการคอมพิวเตอร์">
+  <meta property="og:image" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/resumeAkkaphonWorakleeb30551.png">
+  <meta property="og:image:alt" content="ภาพหน้าปกเรซูเม่ Akkaraphon Worakleeb">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Resume — Akkaraphon Worakleeb (KMUTNB)">
+  <meta name="twitter:description" content="เรซูเม่ปี 3 คณิตศาสตร์เชิงวิทยาการคอมพิวเตอร์ | เปิดดู PDF ได้ทันที ซูมลื่น ดาวน์โหลด/พิมพ์ได้">
+  <meta name="twitter:image" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/resumeAkkaphonWorakleeb30551.png">
+
+  <!-- โทนสี/ธีมเบราว์เซอร์ -->
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#6b0f0f">
+
+  <!-- favicon -->
+  <link rel="icon" type="image/png" href="resumeAkkaphonWorakleeb30551.png">
+  <link rel="apple-touch-icon" href="resumeAkkaphonWorakleeb30551.png">
+
+  <!-- Tailwind CSS (CDN) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- PDF.js (ตัวอ่าน PDF) -->
+  <!-- PDF.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
-    // ชี้ worker ของ PDF.js (สำคัญเวลาโฮสต์บน GitHub Pages)
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
   </script>
 
   <style>
-    /* เงา/มุมโค้งให้หน้า PDF ดูเป็นกระดาษ */
     .page-shadow { box-shadow: 0 10px 22px rgba(2, 6, 23, .12); border-radius: .6rem; }
-    /* แต่งสกอลบาร์ให้ดูสะอาดขึ้น (เฉพาะ WebKit) */
     #viewer::-webkit-scrollbar{height:12px;width:12px}
     #viewer::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
     #viewer::-webkit-scrollbar-track{background:#e2e8f0}
