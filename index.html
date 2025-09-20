@@ -67,7 +67,7 @@
       <!-- สูงพอดีตา: หัก toolbar -->
       <div id="viewer" class="overflow-auto bg-slate-100 flex justify-center"
            style="height: calc(100vh - 128px); touch-action: pan-y;">
-        <div id="loadingMsg" class="p-6 text-slate-500">กำลังโหลดไฟล์…</div>
+        <div id="loadingMsg" class="p-6 text-slate-500">กำลังโหลดไฟล์ครับ...</div>
       </div>
     </section>
 
@@ -80,8 +80,7 @@
   <script>
     /********************************************************************
      * แก้ “รูปกลับหัว”: บังคับหมุนเป็น 0° ตอนเรนเดอร์ (rotation: 0)
-     * เพราะไฟล์ PDF บางไฟล์ฝังค่าหมุนไว้ (เช่น 180°) PDF.js จะเชื่อค่านั้น
-     * เราเลย override ให้หมุน 0° เสมอครับ
+     * เพราะไฟล์ PDF บางไฟล์ฝังค่าหมุนไว้ (เช่น 180°) PDF.js จะเชื่อค่านั้น override ให้หมุน 0° เสมอครับ
      ********************************************************************/
 
     // 1) ชื่อไฟล์ PDF (โฟลเดอร์เดียวกับ index.html)
@@ -161,7 +160,7 @@
       }
     }
 
-    // วาด 1 หน้าให้คม + “หมุนเป็น 0° เสมอ” ด้วย rotation: 0
+    // วาด 1 หน้าให้ + “หมุนเป็น 0° เสมอ” ด้วย rotation: 0
     async function renderOnePage(pageNum) {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       if (renderedAtScale.get(pageNum) === scale) return;
