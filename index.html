@@ -1,93 +1,105 @@
-<!doctype html> <!-- โหมด HTML5 -->
-<html lang="th">
+<!doctype html> <!-- บอกว่าไฟล์นี้เป็น HTML5 -->
+<html lang="th"> <!-- หน้าเว็บนี้ใช้ภาษาไทยเป็นหลัก -->
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- meta viewport: ปิดการซูมทั้งหน้า (user-scalable=no) กันชนกับ pinch ภายใน viewer -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+
   <title>Resume — Akkaraphon Worakleeb</title>
 
-  <!-- ===== META สำหรับพรีวิวลิงก์/SEO แบบสั้นๆ ===== -->
+  <!-- ==== SEO/พรีวิวลิงก์ แบบกระชับ ==== -->
   <meta name="description" content="เรซูเม่ Akkaraphon Worakleeb — KMUTNB | เปิดปุ๊บเห็นเลย ซูมลื่น คม ดาวน์โหลดได้">
   <link rel="canonical" href="https://akkaraphon88.github.io/30551DatacommuWebHosting/">
+
+  <!-- Open Graph (ตอนแชร์ลง LINE/FB/Discord) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Resume — Akkaraphon Worakleeb">
   <meta property="og:url" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/">
   <meta property="og:title" content="Resume — Akkaraphon Worakleeb (KMUTNB)">
-  <meta property="og:description" content="เปิดดู PDF ได้ทันที ซูมลื่น คม">
+  <meta property="og:description" content="เปิดปุ๊บเห็นเลย • ซูมลื่น • ดาวน์โหลดได้">
   <meta property="og:image" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/resumeAkkaphonWorakleeb30551.png">
   <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
-  <meta name="twitter:card" content="summary_large_image">
 
-  <!-- ธีมสี + Favicon (แน่ใจว่าใส่ไฟล์ favicon.png แล้ว) -->
-  <meta name="color-scheme" content="light"><meta name="theme-color" content="#6b0f0f">
-  <link rel="icon" type="image/png" href="favicon.png">
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Resume — Akkaraphon Worakleeb (KMUTNB)">
+  <meta name="twitter:description" content="เปิดปุ๊บเห็นเลย • ซูมลื่น • ดาวน์โหลดได้">
+  <meta name="twitter:image" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/resumeAkkaphonWorakleeb30551.png">
+
+  <!-- ธีมสี + ไอคอนเว็บ -->
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#6b0f0f">
+  <link rel="icon" type="image/png" href="favicon.png">           <!-- ขอให้มีไฟล์ favicon.png อยู่ที่รากโปรเจกต์ -->
   <link rel="apple-touch-icon" href="favicon.png">
 
-  <!-- Tailwind (CDN) -->
+  <!-- Tailwind CDN: ใช้คลาสได้เลย -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- PDF.js -->
+  <!-- PDF.js (ตัวอ่าน PDF ฝั่ง client) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
-    // บอก PDF.js ให้ใช้ worker จาก CDN (จำเป็นบน GitHub Pages)
+    // ชี้ไฟล์ worker ของ PDF.js (สำคัญเวลาโฮสต์บน GitHub Pages)
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
   </script>
 
-  <!-- แต่งหน้ากระดาษ + สกอลบาร์ -->
   <style>
-    .page-shadow{ box-shadow:0 10px 22px rgba(2,6,23,.12); border-radius:.6rem; }
+    /* ให้แผ่นกระดาษดูเป็นกระดาษจริงนิดหน่อย */
+    .page-shadow { box-shadow: 0 10px 22px rgba(2, 6, 23, .12); border-radius: .6rem; }
+    /* แต่งสกอลบาร์ให้สะอาดตา (Chrome/Safari) */
     #viewer::-webkit-scrollbar{height:12px;width:12px}
     #viewer::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
     #viewer::-webkit-scrollbar-track{background:#e2e8f0}
-
-    /* กล่องนี้ไว้ “ขยาย-ย่อ แบบเรียลไทม์” ด้วย CSS transform */
-    #pageScale {
-      transform-origin: top center; /* ซูมแล้วไม่หนีศูนย์ */
-      will-change: transform;       /* 힌ต์ให้เบราว์เซอร์เร่ง HW */
-    }
+    /* กันหน้าเว็บ “เด้ง” ตอนลากสุด */
+    #viewer{ overscroll-behavior: contain; }
+    /* เคล็ดลับความลื่น: บอกเบราว์เซอร์ว่าตัวนี้จะโดน transform บ่อย → สร้างเลเยอร์แยกให้ */
+    .gpu { will-change: transform; transform: translateZ(0); }
   </style>
 </head>
+
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-rose-100">
 
-  <!-- ===== Toolbar ===== -->
+  <!-- ====== TOOLBAR ด้านบน ====== -->
   <header class="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
     <div class="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex flex-wrap items-center gap-2">
-      <!-- ปุ่มซ้าย: คลิกแล้วรีหน้า -->
+      <!-- ปุ่มชื่อแบรนด์: คลิก = รีหน้าใหม่ (ง่ายๆ) -->
       <button id="brandBtn" class="flex items-center gap-2 mr-auto select-none" title="รีหน้าเว็บ">
         <span class="inline-block h-6 w-1.5 bg-rose-900 rounded"></span>
         <span class="font-bold tracking-wide text-rose-900">Resume อัครพนธ์</span>
       </button>
 
-      <!-- ซูม +/− -->
+      <!-- ปุ่มซูมพื้นฐาน -->
       <button id="zoomOutBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">−</button>
       <span id="zoomLabel" class="w-16 text-center font-semibold tabular-nums">100%</span>
       <button id="zoomInBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">+</button>
 
       <span class="mx-1 w-px h-6 bg-slate-200"></span>
 
-      <!-- Open/Download -->
+      <!-- ปุ่มเปิด/ดาวน์โหลด -->
       <a id="openBtn" href="#" target="_blank" rel="noopener"
          class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Open</a>
       <a id="downloadBtn" href="#" download
          class="px-3 py-1.5 rounded-lg bg-rose-900 text-white border border-rose-900 hover:bg-rose-800">Download</a>
     </div>
 
-    <!-- แถบโหลด -->
+    <!-- แถบสถานะโหลด PDF -->
     <div id="progressWrap" class="w-full h-1 bg-slate-200">
       <div id="progressBar" class="h-full w-0 bg-rose-900 transition-all duration-300"></div>
     </div>
   </header>
 
-  <!-- ===== Viewer ===== -->
+  <!-- ====== VIEWER พื้นที่แสดง PDF ====== -->
   <main class="max-w-6xl mx-auto px-3 sm:px-4">
     <section class="mt-4 bg-white border border-slate-200 rounded-xl overflow-hidden">
-      <!-- สูงพอดีตา; touch-action: pan-y = เลื่อนแนวตั้งได้ (เราจะจับ pinch เอง) -->
-      <div id="viewer" class="overflow-auto bg-slate-100 flex justify-center"
+      <!-- สูงพอดีตา: หักพื้นที่ toolbar -->
+      <div id="viewer"
+           class="overflow-auto bg-slate-100 flex justify-center"
            style="height: calc(100vh - 128px); touch-action: pan-y;">
-        <!-- pageScale: ห่อทุกหน้าไว้เพื่อ scale ด้วย CSS แบบสด -->
-        <div id="pageScale">
-          <div id="loadingMsg" class="p-6 text-slate-500">กำลังโหลดไฟล์ครับ...</div>
+        <!-- หมายเหตุ touch-action: pan-y = เลื่อนแนวตั้งได้ แต่ซูม 2 นิ้วเราคุมเอง -->
+        <div id="pageWrap" class="my-5"> <!-- ห่อ canvas เพื่อไว้ทำ transform ตอนซูมสด -->
+          <canvas id="pageCanvas" class="page-shadow bg-white mx-auto block gpu"></canvas>
         </div>
+        <div id="loadingMsg" class="absolute p-6 text-slate-500">กำลังโหลดไฟล์ครับ...</div>
       </div>
     </section>
 
@@ -100,226 +112,234 @@
   </main>
 
   <script>
-    /* ========================= อธิบายแบบบ้านๆ สั้น กระชับ =========================
-       - เปิดเว็บแล้วโหลด PDF ทันที → วาง <canvas> ทีละหน้า
-       - บังคับ rotation:0 กันกลับหัว
-       - ซูม 2 ขั้นตอน:
-           1) หนีบ/กาง หรือกด +/− → ใช้ CSS transform กับ #pageScale (ลื่น)
-           2) พอหยุด 120ms → re-render ด้วย PDF.js ที่ scale ใหม่ (คม)
-       - คลิกชื่อ “Resume อัครพนธ์” = รีหน้า
-       ========================================================================= */
+    /* ================================================================
+       อธิบายแบบบ้านๆ (โหมดสั้น):
+       - ใช้ “ซูม 2 จังหวะ” เพื่อให้สมูท: ตอนกำลังซูม → transform (ลื่น)
+         พอปล่อย/หยุด 120ms → ค่อยเรนเดอร์จริงที่สเกลใหม่ (คม)
+       - แก้ไฟล์กลับหัวด้วย rotation: 0
+       - จำกัด dpr สูงสุด 2 กัน iOS ช้า/กินแรม
+       - ยกเลิกงานเรนเดอร์เก่าถ้ากดซูมรัวๆ (ไม่ให้ค้าง)
+       ================================================================ */
 
-    // ---------- ตั้งชื่อไฟล์ PDF (ต้องอยู่โฟลเดอร์เดียวกับ index.html) ----------
+    /* ===== 1) ตั้งชื่อไฟล์ PDF (อยู่โฟลเดอร์เดียวกับ index.html) ===== */
     const PDF_FILE_LOWER = "resumeAkkaphonWorakleeb30551.pdf";
     const PDF_FILE_UPPER = "resumeAkkaphonWorakleeb30551.PDF";
-    let PDF_FILE = PDF_FILE_LOWER;
+    let   PDF_FILE       = PDF_FILE_LOWER;
 
-    // ---------- ตัวแปรหลัก ----------
-    let pdfDoc = null;              // เอกสาร PDF
-    let renderScale = 1;            // scale ที่ "วาดจริง" บน canvas
-    let viewScale   = 1;            // scale ที่ "โชว์สด" ด้วย CSS transform (ลื่น)
-    const MIN = 0.4, MAX = 4;       // ขอบเขตซูม
-    let baseViewport = null;        // viewport หน้าแรกตอน scale=1
+    /* ===== 2) ตัวแปรหลักของ viewer ===== */
+    let pdfDoc = null;          // ตัวเอกสาร PDF
+    let baseViewport = null;    // ขนาดหน้าแรกตอน scale=1 (ใช้คำนวณฟิต)
+    let renderScale = 1;        // สเกลที่วาด “จริง” (คม)
+    let cssScale    = 1;        // สเกลที่ขยายด้วย CSS ชั่วคราว (ลื่น)
+    let renderTask  = null;     // งานเรนเดอร์ปัจจุบัน (ยกเลิกได้)
+    let settleTimer = null;     // ตัวจับเวลา 120ms หลังซูมหยุด
+    const DPR = Math.min(window.devicePixelRatio || 1, 2); // dpr สูงสุด 2
 
-    // ---------- element ----------
-    const viewer      = document.getElementById('viewer');
-    const pageScaleEl = document.getElementById('pageScale');
-    const loadingMsg  = document.getElementById('loadingMsg');
-    const progressBar = document.getElementById('progressBar');
-    const progressWrap= document.getElementById('progressWrap');
-    const zoomInBtn   = document.getElementById('zoomInBtn');
-    const zoomOutBtn  = document.getElementById('zoomOutBtn');
-    const zoomLabel   = document.getElementById('zoomLabel');
-    const brandBtn    = document.getElementById('brandBtn');
-    const openBtn     = document.getElementById('openBtn');
-    const downloadBtn = document.getElementById('downloadBtn');
+    /* ===== 3) element อ้างอิง ===== */
+    const viewer       = document.getElementById("viewer");
+    const pageWrap     = document.getElementById("pageWrap");   // ห่อ canvas ไว้ transform
+    const canvas       = document.getElementById("pageCanvas");
+    const ctx          = canvas.getContext("2d");
+    const loadingMsg   = document.getElementById("loadingMsg");
+    const progressBar  = document.getElementById("progressBar");
+    const progressWrap = document.getElementById("progressWrap");
+    const brandBtn     = document.getElementById("brandBtn");
+    const zoomInBtn    = document.getElementById("zoomInBtn");
+    const zoomOutBtn   = document.getElementById("zoomOutBtn");
+    const zoomLabel    = document.getElementById("zoomLabel");
+    const openBtn      = document.getElementById("openBtn");
+    const downloadBtn  = document.getElementById("downloadBtn");
 
-    // ปุ่มไฟล์ให้ชี้ถูกตัว
+    /* ===== 4) ปุ่มลิงก์ไฟล์ ===== */
     function wireFileButtons(){ openBtn.href = downloadBtn.href = PDF_FILE; }
 
-    // โชว์ % ซูม
-    const showZoom = () => zoomLabel.textContent = Math.round(viewScale*100) + '%';
+    /* ===== 5) โชว์เปอร์เซ็นต์ซูม (ใช้สเกลรวม = renderScale * cssScale) ===== */
+    function updateZoomLabel(){
+      const pct = Math.round(renderScale * cssScale * 100);
+      zoomLabel.textContent = pct + "%";
+    }
 
-    // ฟิตกว้างตอนเปิดหน้า (ใช้กับ viewScale)
+    /* ===== 6) คำนวณให้ “พอดีกว้าง” แล้ววาดจริง ===== */
     function fitWidth(){
-      const padding = 40;
-      const availW = viewer.clientWidth - padding;
-      viewScale = availW / baseViewport.width;
-      viewScale = Math.max(MIN, Math.min(MAX, viewScale));
-      pageScaleEl.style.transform = `scale(${viewScale})`;
-      showZoom();
+      const padding = 40; // กันชิดขอบ
+      const availableW = viewer.clientWidth - padding;
+      renderScale = availableW / baseViewport.width;
+      cssScale = 1;                       // รี css zoom กลับมา 1
+      pageWrap.style.transform = "";      // ลบ transform ออก
+      updateZoomLabel();
+      renderAt(renderScale);              // วาดใหม่ที่สเกลนี้
     }
 
-    // รีเรนเดอร์ทุกหน้าแบบคม ตาม renderScale ปัจจุบัน
-    async function rerenderAllPages(){
-      // ล้างลูก ๆ ของ pageScale แล้ววางใหม่
-      pageScaleEl.innerHTML = '';
-      const total = pdfDoc.numPages;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    /* ===== 7) ฟังก์ชันวาดจริง (คม) พร้อมยกเลิกงานเก่าถ้ามี ===== */
+    async function renderAt(scale){
+      // ถ้ามีงานวาดค้างอยู่ ให้ยกเลิก (กันหน่วง/แกว่ง)
+      if (renderTask && renderTask.cancel) { try { renderTask.cancel(); } catch {} }
+      // viewport ใหม่ (หมุน 0 องศา แก้กลับหัว)
+      const vp = baseViewport.clone({ scale, rotation: 0 });
 
-      for(let n=1; n<=total; n++){
-        const page = await pdfDoc.getPage(n);
-        const vp = page.getViewport({ scale: renderScale, rotation: 0 });
+      // ตั้งขนาด canvas จริง = ขนาดพิกเซล * DPR (คม)
+      canvas.width  = Math.floor(vp.width  * DPR);
+      canvas.height = Math.floor(vp.height * DPR);
+      // ขนาดที่เห็นบนจอ (CSS pixel)
+      canvas.style.width  = Math.floor(vp.width)  + "px";
+      canvas.style.height = Math.floor(vp.height) + "px";
 
-        const wrap = document.createElement('div');
-        wrap.className = 'my-5';
-        const canvas = document.createElement('canvas');
-        canvas.className = 'page-shadow bg-white mx-auto block';
-        wrap.appendChild(canvas);
-        pageScaleEl.appendChild(wrap);
+      // ดึงหน้าที่ 1 (เรซูเม่ส่วนใหญ่หน้าเดียว)
+      const page = await pdfDoc.getPage(1);
 
-        // ตั้งขนาด canvas จริง (คูณ dpr) + ขนาดที่ตาเห็น
-        canvas.width  = Math.floor(vp.width  * dpr);
-        canvas.height = Math.floor(vp.height * dpr);
-        canvas.style.width  = Math.floor(vp.width)  + 'px';
-        canvas.style.height = Math.floor(vp.height) + 'px';
+      // ให้ PDF.js วาดลง canvas (ชดเชย DPR)
+      renderTask = page.render({
+        canvasContext: ctx,
+        viewport: vp,
+        transform: DPR !== 1 ? [DPR, 0, 0, DPR, 0, 0] : null
+      });
 
-        await page.render({
-          canvasContext: canvas.getContext('2d'),
-          viewport: vp,
-          transform: dpr !== 1 ? [dpr,0,0,dpr,0,0] : null
-        }).promise;
-      }
+      try { await renderTask.promise; } catch(e){ /* ถ้าถูก cancel ก็ผ่านไป */ }
     }
 
-    // ซูมแบบลื่น: เปลี่ยน viewScale ทันที (CSS), จากนั้นหน่วงค่อยวาดจริง
-    let rerenderTimer;
-    function zoomTo(newScale){
-      viewScale = Math.max(MIN, Math.min(MAX, newScale));
-      pageScaleEl.style.transform = `scale(${viewScale})`;
-      showZoom();
+    /* ===== 8) “ซูมลื่น” = แค่เปลี่ยน CSS ก่อน แล้วหน่วง 120ms ค่อยวาดจริง ===== */
+    function smoothZoomBy(factor){
+      // ขั้น 1: อัปเดต cssScale (ลื่นทันที)
+      cssScale = Math.min(4 / renderScale, Math.max(0.4 / renderScale, cssScale * factor));
+      pageWrap.style.transformOrigin = "center top";
+      pageWrap.style.transform = `scale(${cssScale})`;
+      updateZoomLabel();
 
-      // หน่วงสั้น ๆ แล้วค่อยวาดจริงให้คม (กำจัดหน่วงตอนกำลังหนีบ)
-      clearTimeout(rerenderTimer);
-      rerenderTimer = setTimeout(async ()=>{
-        renderScale = viewScale;            // ยอมรับสเกลใหม่
-        await rerenderAllPages();           // วาดคมทุกหน้า
-        pageScaleEl.style.transform = `scale(${viewScale})`; // รักษาสเกลโชว์
+      // ขั้น 2: ถ้าไม่มีการซูมซ้ำใน 120ms → วาดจริงที่สเกลรวมใหม่
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(()=>{
+        renderScale = Math.min(4, Math.max(0.4, renderScale * cssScale));
+        cssScale = 1;
+        pageWrap.style.transform = "";
+        updateZoomLabel();
+        renderAt(renderScale);
       }, 120);
     }
 
-    // ปรับซูมแบบคูณ/หาร (ใช้กับปุ่ม +/− และ wheel)
-    const zoomBy = factor => zoomTo(viewScale * factor);
-
-    // โหลด PDF แล้วแสดงทันที
+    /* ===== 9) โหลด PDF (ถ้า .pdf ไม่เจอ ลอง .PDF ต่อให้) ===== */
     async function loadPdf(){
       wireFileButtons();
 
       const task = pdfjsLib.getDocument({
         url: PDF_FILE,
-        disableAutoFetch: false,
+        disableAutoFetch: true,      // ไม่ดูดทุกหน้า (เราใช้หน้าเดียว)
         rangeChunkSize: 65536
       });
+
       task.onProgress = ({loaded,total})=>{
-        if (total) progressBar.style.width = Math.min(100, Math.round(loaded/total*100))+'%';
+        if (total) progressBar.style.width = Math.min(100, Math.round(loaded/total*100)) + "%";
       };
 
       try{
         pdfDoc = await task.promise;
       }catch(err){
-        if (PDF_FILE === PDF_FILE_LOWER){ PDF_FILE = PDF_FILE_UPPER; wireFileButtons(); return loadPdf(); }
+        if (PDF_FILE === PDF_FILE_LOWER){
+          PDF_FILE = PDF_FILE_UPPER; wireFileButtons(); return loadPdf();
+        }
         throw err;
       }
 
-      // อ่านหน้าแรกเพื่อรู้ขนาดจริง (บังคับ rotation:0)
+      // เตรียม viewport ฐานจากหน้าแรก (scale=1, หมุน 0)
       const first = await pdfDoc.getPage(1);
       baseViewport = first.getViewport({ scale: 1, rotation: 0 });
 
-      // เริ่ม: ฟิตกว้างด้วย viewScale แล้วค่อยวาดจริงตามนั้น
+      // เริ่มด้วย “ฟิตกว้าง” แล้ววาดจริง
       fitWidth();
-      renderScale = viewScale;
-      await rerenderAllPages();
 
+      // เก็บกวาด UI โหลด
       loadingMsg?.remove();
-      setTimeout(()=>progressWrap.classList.add("hidden"), 300);
+      setTimeout(()=>progressWrap.classList.add("hidden"), 400);
     }
 
     // ยิงโหลดเลย
     loadPdf().catch(err=>{
-      progressWrap.classList.add('hidden');
-      pageScaleEl.innerHTML = `<div class="p-6 text-red-700">
+      progressWrap.classList.add("hidden");
+      viewer.innerHTML = `<div class="p-6 text-red-700">
         ไม่สามารถเปิดไฟล์ได้: <b>${err.message}</b><br>
         ตรวจชื่อไฟล์ <code>${PDF_FILE}</code> ให้ตรงกับใน repo (คำนึงตัวพิมพ์เล็ก/ใหญ่)
       </div>`;
     });
 
-    // ===== ปุ่ม/คีย์ลัด =====
-    brandBtn.addEventListener('click', ()=>location.reload()); // คลิกชื่อ = รีหน้า
-    zoomInBtn .addEventListener('click', ()=>zoomBy(1.1));
-    zoomOutBtn.addEventListener('click', ()=>zoomBy(1/1.1));
-    viewer.addEventListener('wheel', e=>{
-      if (e.ctrlKey){ e.preventDefault(); zoomBy(e.deltaY<0 ? 1.08 : 1/1.08); }
-    }, {passive:false});
-    window.addEventListener('keydown', e=>{
-      if ((e.ctrlKey||e.metaKey) && (e.key==='+'||e.key==='=')){ e.preventDefault(); zoomBy(1.1); }
-      if ((e.ctrlKey||e.metaKey) &&  e.key==='-'){            e.preventDefault(); zoomBy(1/1.1); }
-      if ((e.ctrlKey||e.metaKey) &&  e.key==='0'){            e.preventDefault(); fitWidth(); zoomTo(viewScale); }
+    /* ===== 10) ปุ่ม/คีย์ลัด/เมาส์ ===== */
+    brandBtn.addEventListener("click", () => location.reload());  // คลิกชื่อ = รีหน้าใหม่
+    zoomInBtn .addEventListener("click", () => smoothZoomBy(1.1));
+    zoomOutBtn.addEventListener("click", () => smoothZoomBy(1/1.1));
+
+    // Ctrl + ล้อเมาส์ = ซูม (แบบมืออาชีพ)
+    viewer.addEventListener("wheel", (e)=>{
+      if (e.ctrlKey) { e.preventDefault(); smoothZoomBy(e.deltaY < 0 ? 1.08 : 1/1.08); }
+    }, { passive:false });
+
+    // คีย์ลัดเบสิก (+, -, 0)
+    window.addEventListener("keydown",(e)=>{
+      if ((e.ctrlKey||e.metaKey) && (e.key==='+' || e.key==='=')) { e.preventDefault(); smoothZoomBy(1.1); }
+      if ((e.ctrlKey||e.metaKey) &&  e.key==='-')                 { e.preventDefault(); smoothZoomBy(1/1.1); }
+      if ((e.ctrlKey||e.metaKey) &&  e.key==='0')                 { e.preventDefault(); fitWidth(); }
     });
 
-    // ===== Pinch-to-Zoom แบบนิ่มบนมือถือ/แท็บเล็ต =====
-    // ทริค: จับเฉพาะ "สองนิ้ว" เท่านั้น, หนึ่งนิ้ว = ปัดเลื่อนตามปกติ (เราไม่ไปยุ่ง)
-    const touches = new Map();
-    let pinchBaseDist = null, pinchStartScale = null;
+    /* ===== 11) Pinch-to-Zoom บนมือถือ/แท็บเล็ต (สองนิ้วหนีบ/กาง) =====
+       ทำงานเหมือนปุ่มซูม: ตอนหนีบ/กาง → เปลี่ยน cssScale (ลื่น)
+       ปล่อยนิ้ว → เรนเดอร์จริงที่สเกลใหม่ (คม) */
+    const touches = new Map();  // เก็บตำแหน่งนิ้วที่แตะอยู่
+    let pinchBaseDist = null, pinchStartCss = 1;
 
-    const dist = (a,b)=>Math.hypot(a.x-b.x, a.y-b.y);
+    function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
 
-    viewer.addEventListener('pointerdown', e=>{
-      // เก็บเฉพาะ pointer แบบ touch/pen ก็ได้ แต่ mouse ก็ไม่เป็นไร
-      touches.set(e.pointerId, {x:e.clientX, y:e.clientY});
-      // เริ่มจับ pointer เฉพาะตอนมี "สองนิ้ว" เพื่อไม่รบกวนการเลื่อนปกติ
-      if (touches.size === 2) viewer.setPointerCapture(e.pointerId);
-    }, {passive:true});
+    viewer.addEventListener("pointerdown",(e)=>{
+      viewer.setPointerCapture(e.pointerId);
+      touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }, { passive:true });
 
-    viewer.addEventListener('pointermove', e=>{
+    viewer.addEventListener("pointermove",(e)=>{
       if (!touches.has(e.pointerId)) return;
-      touches.set(e.pointerId, {x:e.clientX, y:e.clientY});
+      touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
 
       if (touches.size === 2){
         const [a,b] = [...touches.values()];
         const d = dist(a,b);
-        if (!pinchBaseDist){ pinchBaseDist = d; pinchStartScale = viewScale; }
-        else {
+        if (!pinchBaseDist){
+          pinchBaseDist = d;        // เริ่ม pinch → จำระยะเริ่ม
+          pinchStartCss = cssScale; // จำ cssScale ตอนเริ่ม
+        }else{
           const factor = d / pinchBaseDist;
-          const target = Math.max(MIN, Math.min(MAX, pinchStartScale * factor));
-          // อัปเดตเฉพาะ CSS ให้ลื่นก่อน
-          pageScaleEl.style.transform = `scale(${target})`;
-          viewScale = target; showZoom();
+          // อัปเดต cssScale แบบ “สด” เพื่อความลื่น
+          cssScale = Math.min(4 / renderScale, Math.max(0.4 / renderScale, pinchStartCss * factor));
+          pageWrap.style.transformOrigin = "center top";
+          pageWrap.style.transform = `scale(${cssScale})`;
+          updateZoomLabel();
+
+          // ตั้ง settleTimer ใหม่ทุกครั้ง (ปล่อยนิ้วค่อยวาดจริง)
+          clearTimeout(settleTimer);
+          settleTimer = setTimeout(()=>{
+            renderScale = Math.min(4, Math.max(0.4, renderScale * cssScale));
+            cssScale = 1;
+            pageWrap.style.transform = "";
+            updateZoomLabel();
+            renderAt(renderScale);
+          }, 120);
         }
-        // กันเบราว์เซอร์ซูมระบบ (สำคัญบน iOS)
-        e.preventDefault();
+        e.preventDefault(); // กัน iOS ซูมทั้งหน้า
       }
-    }, {passive:false});
+    }, { passive:false });
 
     function endPointer(e){
-      if (touches.has(e.pointerId)) touches.delete(e.pointerId);
-      if (touches.size < 2 && pinchBaseDist){ // จบ pinch → re-render ให้คม
-        pinchBaseDist = null; pinchStartScale = null;
-        zoomTo(viewScale); // ใช้ flow เดิม: หน่วงนิดแล้ววาดจริง
-      }
+      touches.delete(e.pointerId);
+      if (touches.size < 2) { pinchBaseDist = null; }
     }
-    viewer.addEventListener('pointerup', endPointer, {passive:true});
-    viewer.addEventListener('pointercancel', endPointer, {passive:true});
-    viewer.addEventListener('pointerleave', endPointer, {passive:true});
+    viewer.addEventListener("pointerup", endPointer, { passive:true });
+    viewer.addEventListener("pointercancel", endPointer, { passive:true });
+    viewer.addEventListener("pointerleave", endPointer, { passive:true });
 
-    // ===== รีไซส์จอ: คงความฟิตกว้างแบบสมเหตุสมผล =====
+    /* ===== 12) รีไซซ์หน้าจอ: คง “ฟิตกว้าง” ไว้ ===== */
     let resizeTimer;
-    window.addEventListener('resize', ()=>{
+    window.addEventListener("resize", ()=>{
       if (!baseViewport) return;
       clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(()=>{
-        const currentPct = viewScale; // จำซูมไว้
-        fitWidth();                   // คำนวณใหม่ให้พอดีกว้าง
-        // ถ้าผู้ใช้ซูมมือไว้มากกว่าฟิตกว้าง ก็รักษาสูงกว่าเดิมไว้
-        viewScale = Math.max(viewScale, currentPct);
-        pageScaleEl.style.transform = `scale(${viewScale})`;
-        showZoom();
-        // วาดคมตามสเกลปัจจุบัน
-        zoomTo(viewScale);
-      }, 150);
+      resizeTimer = setTimeout(()=>{ fitWidth(); }, 120);
     });
   </script>
 
-  <!-- No-JS fallback -->
+  <!-- เผื่อคนปิด JS → ให้ลิงก์สำรองเปิด PDF ได้ -->
   <noscript>
     <div class="max-w-3xl mx-auto my-6 p-4 bg-yellow-50 border border-yellow-300 rounded">
       ต้องเปิดใช้งาน JavaScript เพื่อดูตัวอ่าน PDF แบบโต้ตอบ
