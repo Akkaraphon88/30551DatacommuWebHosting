@@ -1,47 +1,56 @@
-<!doctype html>
-<html lang="th">
+<!doctype html> <!-- โหมด HTML5 -->
+<html lang="th"> <!-- ภาษาหลักของหน้าเป็นไทย -->
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+
   <title>Resume — Akkaraphon Worakleeb</title>
 
-  <!-- คำอธิบาย/พรีวิวหลัก -->
+  <!-- ====== META สำหรับ SEO/พรีวิวลิงก์ ====== -->
+  <!-- คำอธิบายหลัก (ถ้าแพลตฟอร์มไม่อ่าน OG ก็ใช้ตัวนี้แหละ) -->
   <meta name="description" content="เรซูเม่ Akkaraphon Worakleeb — ปี 3 Mathematics & Computer Science (KMUTNB) | เปิดดู PDF ได้ทันที ซูมลื่น ดาวน์โหลดได้">
+  <!-- บอก URL จริงของหน้านี้ (กันลิงก์ซ้ำ) -->
   <link rel="canonical" href="https://akkaraphon88.github.io/30551DatacommuWebHosting/">
 
-  <!-- Open Graph (ใช้กับ LINE/FB/Discord) -->
+  <!-- Open Graph (เวลาแชร์ลง LINE/FB/Discord) -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Resume — Akkaraphon Worakleeb">
   <meta property="og:url" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/">
   <meta property="og:title" content="Resume — Akkaraphon Worakleeb (KMUTNB)">
   <meta property="og:description" content="เรซูเม่ปี 3 คณิตศาสตร์เชิงวิทยาการคอมพิวเตอร์ | เปิดดู PDF ได้ทันที ซูมลื่น ดาวน์โหลดได้">
-  <meta property="og:image" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/favicon.png">
+  <!-- ใช้รูปเรซูเม่เป็นภาพพรีวิวตอนแชร์ -->
+  <meta property="og:image" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/resumeAkkaphonWorakleeb30551.png">
   <meta property="og:image:alt" content="ภาพหน้าปกเรซูเม่ Akkaraphon Worakleeb">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
-  <!-- Twitter Card -->
+  <!-- Twitter Card (บางที่ก็อ่านอันนี้) -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Resume — Akkaraphon Worakleeb (KMUTNB)">
   <meta name="twitter:description" content="เรซูเม่ปี 3 คณิตศาสตร์เชิงวิทยาการคอมพิวเตอร์ | เปิดดู PDF ได้ทันที ซูมลื่น ดาวน์โหลดได้">
   <meta name="twitter:image" content="https://akkaraphon88.github.io/30551DatacommuWebHosting/resumeAkkaphonWorakleeb30551.png">
 
-  <!-- โทน/ธีม และ favicon -->
+  <!-- ธีมสีของเบราว์เซอร์บนมือถือ -->
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#6b0f0f">
+
+  <!-- ====== FAVICON / APP ICON ======
+       ใช้ไฟล์ favicon.png ที่อยู่รูทของ repo (มีอยู่แล้วในโปรเจกต์) -->
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="favicon.png">
 
-  <!-- Tailwind (CDN) -->
+  <!-- Tailwind CSS แบบ CDN (ใช้คลาสได้เลย ไม่ต้อง build) -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- PDF.js -->
+  <!-- PDF.js (ตัวอ่าน PDF ฝั่ง client) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>
+    // บอก PDF.js ให้ใช้ worker จาก CDN (สำคัญมากบน GitHub Pages)
     pdfjsLib.GlobalWorkerOptions.workerSrc =
       "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
   </script>
 
+  <!-- สไตล์เสริมอีกนิดให้กระดาษดูนุ่มๆ + สกอลบาร์สะอาดตา -->
   <style>
     .page-shadow{ box-shadow:0 10px 22px rgba(2,6,23,.12); border-radius:.6rem; }
     #viewer::-webkit-scrollbar{height:12px;width:12px}
@@ -49,39 +58,42 @@
     #viewer::-webkit-scrollbar-track{background:#e2e8f0}
   </style>
 </head>
+
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-rose-100">
 
-  <!-- Toolbar -->
+  <!-- ===== TOOLBAR ด้านบน ===== -->
   <header class="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
     <div class="max-w-6xl mx-auto px-3 sm:px-4 py-2.5 flex flex-wrap items-center gap-2">
-      <div class="flex items-center gap-2 mr-auto">
-        <div class="h-6 w-1.5 bg-rose-900 rounded"></div>
-        <div class="font-bold tracking-wide text-rose-900">Resume อัครพนธ์</div>
-      </div>
+      <!-- โลโก้/ชื่อเว็บฝั่งซ้าย → คลิกแล้วรีหน้า (เหมือนปุ่มรีเฟรช) -->
+      <button id="brandBtn" class="flex items-center gap-2 mr-auto select-none" title="รีหน้าเว็บ">
+        <span class="inline-block h-6 w-1.5 bg-rose-900 rounded"></span>
+        <span class="font-bold tracking-wide text-rose-900">Resume อัครพนธ์</span>
+      </button>
 
-      <!-- ปุ่มซูม -->
+      <!-- ปุ่มซูมพื้นฐาน (+ / −) -->
       <button id="zoomOutBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">−</button>
       <span id="zoomLabel" class="w-16 text-center font-semibold tabular-nums">100%</span>
       <button id="zoomInBtn" class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">+</button>
 
       <span class="mx-1 w-px h-6 bg-slate-200"></span>
 
-      <!-- ปุ่มไฟล์ -->
+      <!-- ปุ่มเปิดไฟล์/ดาวน์โหลด -->
       <a id="openBtn" href="#" target="_blank" rel="noopener"
          class="px-3 py-1.5 rounded-lg border border-slate-300 hover:border-slate-400">Open</a>
       <a id="downloadBtn" href="#" download
          class="px-3 py-1.5 rounded-lg bg-rose-900 text-white border border-rose-900 hover:bg-rose-800">Download</a>
     </div>
 
-    <!-- Progress bar -->
+    <!-- แถบสถานะตอนโหลด PDF (ค่อยๆ วิ่ง) -->
     <div id="progressWrap" class="w-full h-1 bg-slate-200">
       <div id="progressBar" class="h-full w-0 bg-rose-900 transition-all duration-300"></div>
     </div>
   </header>
 
-  <!-- Viewer -->
+  <!-- ===== พื้นที่แสดง PDF ===== -->
   <main class="max-w-6xl mx-auto px-3 sm:px-4">
     <section class="mt-4 bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <!-- ทำให้สูง “พอดีตา”: หักพื้นที่ toolbar ข้างบน -->
       <div id="viewer" class="overflow-auto bg-slate-100 flex justify-center"
            style="height: calc(100vh - 128px); touch-action: pan-y;">
         <div id="loadingMsg" class="p-6 text-slate-500">กำลังโหลดไฟล์ครับ...</div>
@@ -97,106 +109,118 @@
   </main>
 
   <script>
-    /* ---------- ตั้งค่าไฟล์ PDF (ต้องอยู่โฟลเดอร์เดียวกับ index.html) ---------- */
-    const PDF_FILE_LOWER = "resumeAkkaphonWorakleeb30551.pdf";
-    const PDF_FILE_UPPER = "resumeAkkaphonWorakleeb30551.PDF";
+    /* ============================================
+      
+       - ใช้ PDF.js อ่านไฟล์เรซูเม่แล้ววาดลง <canvas> 
+       - เปิดเว็บปุ๊บ “ฟิตกว้าง” เห็นทันที
+       - ซูมได้ 3 ทาง: ปุ่ม +/−, Ctrl+ล้อเมาส์, หนีบ/กาง 2 นิ้ว
+       - คลิกชื่อ "Resume อัครพนธ์" ด้านซ้าย = รีหน้าใหม่
+       - แถบ progress โชว์สถานะโหลดไฟล์
+       ============================================ */
+
+    /* ---------- 1) ตั้งชื่อไฟล์ PDF (ต้องอยู่โฟลเดอร์เดียวกับ index.html) ---------- */
+    const PDF_FILE_LOWER = "resumeAkkaphonWorakleeb30551.pdf"; // ไฟล์พิมพ์เล็ก
+    const PDF_FILE_UPPER = "resumeAkkaphonWorakleeb30551.PDF"; // สำรองถ้าอัปเป็น .PDF
     let PDF_FILE = PDF_FILE_LOWER;
 
-    /* ---------- ตัวแปรสถานะ ---------- */
-    let pdfDoc = null;
-    let scale = 1;
-    let baseViewport = null;     // ใช้คำนวน "พอดีกว้าง"
-    const renderedAtScale = new Map();
+    /* ---------- 2) ตัวแปรสถานะ viewer ---------- */
+    let pdfDoc = null;            // เอกสาร PDF ทั้งเล่ม
+    let scale = 1;                // ระดับซูมปัจจุบัน (1 = 100%)
+    let baseViewport = null;      // ขนาดหน้าแรกตอน scale=1 (ไว้คำนวนฟิตกว้าง)
+    const renderedAtScale = new Map(); // จำว่า "หน้าไหนวาดที่สเกลอะไรแล้ว"
 
-    /* ---------- element ---------- */
-    const viewer      = document.getElementById("viewer");
-    const loadingMsg  = document.getElementById("loadingMsg");
-    const progressBar = document.getElementById("progressBar");
-    const progressWrap= document.getElementById("progressWrap");
-    const zoomInBtn   = document.getElementById("zoomInBtn");
-    const zoomOutBtn  = document.getElementById("zoomOutBtn");
-    const zoomLabel   = document.getElementById("zoomLabel");
-    const openBtn     = document.getElementById("openBtn");
-    const downloadBtn = document.getElementById("downloadBtn");
+    /* ---------- 3) อ้างอิง element ที่ต้องใช้ ---------- */
+    const viewer       = document.getElementById("viewer");
+    const loadingMsg   = document.getElementById("loadingMsg");
+    const progressBar  = document.getElementById("progressBar");
+    const progressWrap = document.getElementById("progressWrap");
+    const brandBtn     = document.getElementById("brandBtn");
+    const zoomInBtn    = document.getElementById("zoomInBtn");
+    const zoomOutBtn   = document.getElementById("zoomOutBtn");
+    const zoomLabel    = document.getElementById("zoomLabel");
+    const openBtn      = document.getElementById("openBtn");
+    const downloadBtn  = document.getElementById("downloadBtn");
 
-    /* ---------- ชี้ปุ่มให้เปิด/ดาวน์โหลดไฟล์ที่ถูกต้อง ---------- */
+    /* ---------- 4) ปุ่มไฟล์ให้ชี้ไปที่ PDF ที่ถูกต้อง ---------- */
     function wireFileButtons(){
-      openBtn.href = PDF_FILE;
+      openBtn.href     = PDF_FILE;
       downloadBtn.href = PDF_FILE;
     }
 
-    /* ---------- helper ---------- */
-    const updateZoomLabel = () => zoomLabel.textContent = Math.round(scale*100)+"%";
+    /* ---------- 5) helper ง่ายๆ ---------- */
+    const updateZoomLabel = () => (zoomLabel.textContent = Math.round(scale*100) + "%");
 
-    function fitWidth(){
-      const padding = 40;
+    function fitWidth(){                    // ฟิตกว้างพอดี viewer (อ่านสบายตา)
+      const padding = 40;                   // กันชิดขอบซ้ายขวา
       const availableW = viewer.clientWidth - padding;
       scale = availableW / baseViewport.width;
       updateZoomLabel();
     }
 
-    function zoomBy(factor){
-      const newScale = Math.min(4, Math.max(0.4, scale * factor));
-      if (Math.abs(newScale - scale) < 0.02) return;
+    function zoomBy(factor){                // ซูมแบบคูณ/หาร (ลื่น)
+      const newScale = Math.min(4, Math.max(0.4, scale * factor)); // จำกัด 40%–400%
+      if (Math.abs(newScale - scale) < 0.02) return;               // ต่างนิดเดียวไม่ต้องวาดใหม่
       scale = newScale;
       updateZoomLabel();
       renderedAtScale.clear();
       renderVisiblePages();
-      viewer.scrollTo({top:0, behavior:"instant"});
+      viewer.scrollTo({ top: 0, behavior: "instant" });           // ซูมแล้วพากลับบนสุดกันงง
     }
 
-    function buildPlaceholders(){
+    function buildPlaceholders(){           // ปูโครงหน้าก่อน (รองรับหลายหน้า)
       viewer.innerHTML = "";
       const total = pdfDoc.numPages;
-      for(let n=1;n<=total;n++){
+      for (let n = 1; n <= total; n++){
         const wrap = document.createElement("div");
         wrap.className = "my-5";
         wrap.dataset.page = n;
 
         const canvas = document.createElement("canvas");
-        canvas.className = "page-shadow bg-white mx-auto block";
+        canvas.className = "page-shadow bg-white mx-auto block"; // ให้ฟีลเป็นแผ่นกระดาษ
         wrap.appendChild(canvas);
 
         viewer.appendChild(wrap);
       }
     }
 
-    async function renderOnePage(pageNum){
-      const dpr = Math.min(window.devicePixelRatio||1, 2);
-      if (renderedAtScale.get(pageNum) === scale) return;
+    async function renderOnePage(pageNum){  // วาด 1 หน้าให้คม (รองรับจอ retina)
+      const dpr = Math.min(window.devicePixelRatio || 1, 2); // dpr สูงสุด 2 กันกินแรม
+      if (renderedAtScale.get(pageNum) === scale) return;    // วาดสเกลเดิมไว้แล้ว ก็ข้าม
 
       const page = await pdfDoc.getPage(pageNum);
-      // แก้ไฟล์กลับหัว: บังคับ rotation:0
+      // บังคับ rotation: 0 กันไฟล์กลับหัวจากต้นฉบับ
       const viewport = page.getViewport({ scale, rotation: 0 });
 
       const holder = viewer.querySelector(`[data-page="${pageNum}"]`);
       const canvas = holder.querySelector("canvas");
-      const ctx = canvas.getContext("2d");
+      const ctx    = canvas.getContext("2d");
 
+      // ขนาดจริงของแคนวาส (คูณ dpr → คม)
       canvas.width  = Math.floor(viewport.width  * dpr);
       canvas.height = Math.floor(viewport.height * dpr);
+      // ขนาดที่เห็นบนจอ
       canvas.style.width  = Math.floor(viewport.width)  + "px";
       canvas.style.height = Math.floor(viewport.height) + "px";
 
-      const renderContext = {
+      await page.render({
         canvasContext: ctx,
         viewport,
-        transform: dpr!==1 ? [dpr,0,0,dpr,0,0] : null
-      };
-      await page.render(renderContext).promise;
+        transform: dpr !== 1 ? [dpr, 0, 0, dpr, 0, 0] : null
+      }).promise;
+
       renderedAtScale.set(pageNum, scale);
     }
 
-    function renderVisiblePages(){
+    function renderVisiblePages(){          // วาดเฉพาะหน้าที่อยู่ในจอ → ลื่น
       document.querySelectorAll('#viewer [data-page]').forEach(el=>{
         const r = el.getBoundingClientRect();
         const root = viewer.getBoundingClientRect();
         const visible = r.bottom > root.top && r.top < root.bottom;
-        if(visible) renderOnePage(Number(el.dataset.page));
+        if (visible) renderOnePage(Number(el.dataset.page));
       });
     }
 
-    /* ---------- โหลด PDF (มี fallback .PDF) แล้วแสดงทันที ---------- */
+    /* ---------- 6) โหลด PDF (ถ้า .pdf หาไม่เจอ ลอง .PDF ต่อให้) ---------- */
     async function loadPdf(){
       wireFileButtons();
 
@@ -206,15 +230,15 @@
         rangeChunkSize: 65536
       });
 
+      // แถบโหลดวิ่งตาม progress
       task.onProgress = ({loaded,total})=>{
-        if(total) progressBar.style.width = Math.min(100, Math.round(loaded/total*100))+"%";
+        if (total) progressBar.style.width = Math.min(100, Math.round(loaded/total*100)) + "%";
       };
 
       try{
         pdfDoc = await task.promise;
       }catch(err){
-        // ถ้าไฟล์ .pdf ไม่เจอ ลอง .PDF
-        if(PDF_FILE === PDF_FILE_LOWER){
+        if (PDF_FILE === PDF_FILE_LOWER){            // ลองไฟล์สำรอง .PDF
           PDF_FILE = PDF_FILE_UPPER;
           wireFileButtons();
           return loadPdf();
@@ -222,18 +246,19 @@
         throw err;
       }
 
-      // viewport ฐานจากหน้าแรก
+      // ดูขนาดหน้าแรกที่ scale=1 (เอาไว้คำนวนฟิตกว้าง)
       const first = await pdfDoc.getPage(1);
-      baseViewport = first.getViewport({ scale:1, rotation:0 });
+      baseViewport = first.getViewport({ scale: 1, rotation: 0 });
 
       buildPlaceholders();
-      fitWidth();          // เปิดมาพอดีกว้าง “เห็นเลย”
+      fitWidth();            // เปิดมาปุ๊บฟิตกว้าง
       renderVisiblePages();
 
       loadingMsg?.remove();
       setTimeout(()=>progressWrap.classList.add("hidden"), 400);
     }
 
+    // ยิงโหลดทันทีที่หน้าเสร็จ
     loadPdf().catch(err=>{
       progressWrap.classList.add("hidden");
       viewer.innerHTML = `<div class="p-6 text-red-700">
@@ -242,26 +267,81 @@
       </div>`;
     });
 
-    /* ---------- ปุ่มซูม & wheel zoom ---------- */
-    zoomInBtn.addEventListener("click",  ()=>zoomBy(1.1));
-    zoomOutBtn.addEventListener("click", ()=>zoomBy(1/1.1));
+    /* ---------- 7) ปุ่ม/คีย์ลัด และ “ซูมด้วยล้อเมาส์” ---------- */
+    brandBtn.addEventListener("click", () => location.reload()); // คลิกชื่อ = รีหน้าใหม่
+    zoomInBtn .addEventListener("click", () => zoomBy(1.1));
+    zoomOutBtn.addEventListener("click", () => zoomBy(1/1.1));
+
+    // Ctrl + ล้อเมาส์ = ซูม (ฟีลเหมือน viewer มืออาชีพ)
     viewer.addEventListener("wheel",(e)=>{
-      if(e.ctrlKey){ e.preventDefault(); zoomBy(e.deltaY<0?1.08:1/1.08); }
+      if (e.ctrlKey){ e.preventDefault(); zoomBy(e.deltaY<0 ? 1.08 : 1/1.08); }
     }, {passive:false});
 
-    /* ---------- รีไซซ์: คงความ “พอดีกว้าง” ---------- */
+    // คีย์ลัดเบาๆ (+, -, 0) — เผื่อใช้คีย์บอร์ด
+    window.addEventListener("keydown",(e)=>{
+      if ((e.ctrlKey||e.metaKey) && (e.key==='+' || e.key==='=')){ e.preventDefault(); zoomBy(1.1); }
+      if ((e.ctrlKey||e.metaKey) &&  e.key==='-'){                e.preventDefault(); zoomBy(1/1.1); }
+      if ((e.ctrlKey||e.metaKey) &&  e.key==='0'){                e.preventDefault(); fitWidth(); renderedAtScale.clear(); renderVisiblePages(); }
+    });
+
+    /* ---------- 8) รองรับ “ซูมด้วยมือ” (Pinch-to-Zoom) ----------
+       อธิบายง่ายๆ: จับ pointer 2 นิ้วไว้ ดูระยะห่าง ถ้าห่างเพิ่ม = ซูมเข้า, ห่างลด = ซูมออก
+       ตั้งค่า touch-action: pan-y ไว้แล้ว จะยังปัดขึ้นลงได้ปกติ แต่เราคุม pinch เอง */
+    const touches = new Map();      // เก็บตำแหน่งของนิ้วที่แตะอยู่
+    let pinchBaseDist = null;       // ระยะฐานตอนเริ่มหนีบ/กาง
+    let pinchStartScale = null;     // scale ตอนเริ่มหนีบ/กาง
+
+    function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+
+    viewer.addEventListener("pointerdown",(e)=>{
+      viewer.setPointerCapture(e.pointerId);
+      touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    }, {passive:true});
+
+    viewer.addEventListener("pointermove",(e)=>{
+      if (!touches.has(e.pointerId)) return;
+      touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (touches.size === 2){
+        const [a,b] = [...touches.values()];
+        const d = dist(a,b);
+        if (!pinchBaseDist){
+          // เพิ่งเริ่ม pinch → จำค่าเริ่มต้นไว้ก่อน
+          pinchBaseDist = d; pinchStartScale = scale;
+        }else{
+          const factor = d / pinchBaseDist;                    // อัตราขยายเทียบกับตอนเริ่ม
+          const newScale = Math.min(4, Math.max(0.4, pinchStartScale * factor));
+          if (Math.abs(newScale - scale) > 0.02){
+            scale = newScale; updateZoomLabel();
+            renderedAtScale.clear(); renderVisiblePages();
+          }
+        }
+        e.preventDefault(); // กันเบราว์เซอร์ซูมเอง
+      }
+    }, {passive:false});
+
+    function endPointer(e){
+      touches.delete(e.pointerId);
+      if (touches.size < 2){ pinchBaseDist = null; pinchStartScale = null; }
+    }
+    viewer.addEventListener("pointerup", endPointer, {passive:true});
+    viewer.addEventListener("pointercancel", endPointer, {passive:true});
+    viewer.addEventListener("pointerleave", endPointer, {passive:true});
+
+    /* ---------- 9) เวลารีไซซ์หน้าต่าง: คงความ “ฟิตกว้าง” ให้อัตโนมัติ ---------- */
     let resizeTimer;
     window.addEventListener("resize",()=>{
-      if(!baseViewport) return;
+      if (!baseViewport) return;
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(()=>{
         fitWidth();
         renderedAtScale.clear();
         renderVisiblePages();
-      },120);
+      }, 120);
     });
   </script>
 
+  <!-- เผื่อมีคนปิด JS → ให้ลิงก์สำรองเปิด PDF ได้ -->
   <noscript>
     <div class="max-w-3xl mx-auto my-6 p-4 bg-yellow-50 border border-yellow-300 rounded">
       ต้องเปิดใช้งาน JavaScript เพื่อดูตัวอ่าน PDF แบบโต้ตอบ
